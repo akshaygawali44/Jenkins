@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven'
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                git 'https://github.com/akshaygawali44/jenkins-java-project.git'
+            }
+        }
+        
+        stage('build') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        
+        stage('test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        
+        stage('artifact') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        stage('deploy') {
+            steps {
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: '30504e59-40b1-492b-ae83-c6099a7b8136', path: '', url: 'http://52.66.211.154:8080/')], contextPath: 'Netflix', war: '**/*.war'
+            }
+        }
+        
+        
+    }
+}
