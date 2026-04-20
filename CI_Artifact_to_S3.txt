@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+   
+    tools {
+        maven 'maven'
+    }
+   
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('acesskey')
+        AWS_SECRET_ACCESS_KEY = credentials('secretkey')
+    }
+   
+    stages {
+        stage('checkout') {
+            steps {
+                git 'https://github.com/devopsbyraham/jenkins-java-project.git'
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        stage('test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('artifact') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        stage('s3') {
+            steps {
+                sh 'aws s3 cp target/NETFLIX-1.2.2.war s3://my-jenkins-test-bucket-20260421'
+            }
+        }
+    }
+}
